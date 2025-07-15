@@ -97,16 +97,16 @@ async function run() {
 
     //update work
     app.put("/works/:id", async (req, res) => {
-  const id = req.params.id;
-  const updatedData = req.body;
+      const id = req.params.id;
+       const { _id, ...updatedData } = req.body;
 
-  const result = await worksCollection.updateOne(
-    { _id: new ObjectId(id) },
-    { $set: updatedData }
-  );
+      const result = await worksCollection.updateOne(
+        { _id: new ObjectId(id) },
+        { $set: updatedData }
+      );
 
-  res.json(result);
-});
+      res.json(result);
+    });
 
 
     // Send a ping to confirm a successful connection
