@@ -230,7 +230,7 @@ async function run() {
       }
     });
 
-    app.patch("/employees/verify/:email", async (req, res) => {
+    app.patch("/users/:id", async (req, res) => {
       const { email } = req.params;
       const { isVerified } = req.body; // true/false
       const result = await usersCollection.updateOne(
