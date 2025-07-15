@@ -98,7 +98,7 @@ async function run() {
     //update work
     app.put("/works/:id", async (req, res) => {
       const id = req.params.id;
-       const { _id, ...updatedData } = req.body;
+      const updatedData = req.body;
 
       const result = await worksCollection.updateOne(
         { _id: new ObjectId(id) },
