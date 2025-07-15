@@ -90,14 +90,28 @@ async function run() {
 
     //post works by employee
     app.post("/works", async (req, res) => {
-  const newWork = req.body;
-  const result = await worksCollection.insertOne(newWork);
+      const newWork = req.body;
+      const result = await worksCollection.insertOne(newWork);
+      res.json(result);
+    });
+
+    //update work
+    app.put("/works/:id", async (req, res) => {
+  const id = req.params.id;
+  const updatedData = req.body;
+
+  const result = await worksCollection.updateOne(
+    { _id: new ObjectId(id) },
+    { $set: updatedData }
+  );
+
   res.json(result);
 });
 
+
     // Send a ping to confirm a successful connection
-    await client.db("admin").command({ ping: 1 });
-    console.log("Pinged your deployment. You successfully connected to MongoDB!");
+    // await client.db("admin").command({ ping: 1 });
+    // console.log("Pinged your deployment. You successfully connected to MongoDB!");
 
 
   } finally {
