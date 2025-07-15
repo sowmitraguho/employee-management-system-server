@@ -159,11 +159,12 @@ async function run() {
       //   .toArray();
 
       const payments = await paymentsCollection.find({ employeeEmail: email }).toArray();
-      res.json({
-        payments,
-        //totalPages: Math.ceil(totalCount / limit),
-        //currentPage: page,
-      });
+      // res.json({
+      //   payments,
+      //   //totalPages: Math.ceil(totalCount / limit),
+      //   //currentPage: page,
+      // });
+      res.json(payments);
     });
 
 
