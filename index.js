@@ -88,6 +88,12 @@ async function run() {
       res.send(works);
     });
 
+    //post works by employee
+    app.post("/works", async (req, res) => {
+  const newWork = req.body;
+  const result = await worksCollection.insertOne(newWork);
+  res.json(result);
+});
 
     // Send a ping to confirm a successful connection
     await client.db("admin").command({ ping: 1 });
