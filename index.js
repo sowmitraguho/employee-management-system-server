@@ -167,63 +167,63 @@ async function run() {
     //   res.json(payments);
     // });
     app.get("/payments/:email", async (req, res) => {
-  try {
-    const { email } = req.params;
+      try {
+        const { email } = req.params;
 
-    // Pagination params
-    const page = parseInt(req.query.page) || 1;
-    const limit = parseInt(req.query.limit) || 5;
+        // Pagination params
+        const page = parseInt(req.query.page) || 1;
+        const limit = parseInt(req.query.limit) || 5;
 
-    // Find the employee document
-    const employee = await paymentsCollection.findOne({ email: email });
+        // Find the employee document
+        const employee = await paymentsCollection.findOne({ email: email });
 
-    if (!employee) {
-      return res.status(404).json({ message: "Employee not found" });
-    }
+        if (!employee) {
+          return res.status(404).json({ message: "Employee not found" });
+        }
 
-    // Extract payment history
-    let history = employee.paymentHistory || [];
+        // Extract payment history
+        let history = employee.paymentHistory || [];
 
-    // ✅ Sort earliest month/year first
-    history.sort((a, b) => {
-      if (a.year !== b.year) return a.year - b.year;
-      const monthsOrder = [
-        "January",
-        "February",
-        "March",
-        "April",
-        "May",
-        "June",
-        "July",
-        "August",
-        "September",
-        "October",
-        "November",
-        "December"
-      ];
-      return monthsOrder.indexOf(a.month) - monthsOrder.indexOf(b.month);
+        // ✅ Sort earliest month/year first
+        history.sort((a, b) => {
+          if (a.year !== b.year) return a.year - b.year;
+          const monthsOrder = [
+            "January",
+            "February",
+            "March",
+            "April",
+            "May",
+            "June",
+            "July",
+            "August",
+            "September",
+            "October",
+            "November",
+            "December"
+          ];
+          return monthsOrder.indexOf(b.month) - monthsOrder.indexOf(a.month);
+        });
+
+        // ✅ Pagination
+        const totalCount = history.length;
+        const totalPages = Math.ceil(totalCount / limit);
+        const startIndex = (page - 1) * limit;
+        const paginatedHistory = history.slice(startIndex, startIndex + limit);
+
+        res.json({
+          email: employee.email,
+          designation: employee.designation,
+          payments: paginatedHistory,
+          totalPages,
+          currentPage: page,
+          totalCount
+        });
+
+      } catch (error) {
+        console.error("Error fetching payments:", error);
+        res.status(500).json({ message: "Internal server error" });
+      }
     });
-
-    // ✅ Pagination
-    const totalCount = history.length;
-    const totalPages = Math.ceil(totalCount / limit);
-    const startIndex = (page - 1) * limit;
-    const paginatedHistory = history.slice(startIndex, startIndex + limit);
-
-    res.json({
-      email: employee.email,
-      designation: employee.designation,
-      payments: paginatedHistory,
-      totalPages,
-      currentPage: page,
-      totalCount
-    });
-
-  } catch (error) {
-    console.error("Error fetching payments:", error);
-    res.status(500).json({ message: "Internal server error" });
-  }
-});
 
 
 
