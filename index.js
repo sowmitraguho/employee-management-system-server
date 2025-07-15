@@ -82,11 +82,6 @@ async function run() {
 
 
     // GET works for a specific employee by email
-    // app.get('/works', async (req, res) => {
-    //   const email = req.query.email;
-    //   const works = await worksCollection.find({ email }).sort({ assignedDate: -1 }).toArray();
-    //   res.send(works);
-    // });
     app.get('/works', async (req, res) => {
       const email = req.query.email;
       console.log("Query email:", email); // <-- Debug log
@@ -98,6 +93,30 @@ async function run() {
     });
 
 
+
+
+    // ✅ DELETE work by ID
+    app.delete("/works/:id", async (req, res) => {
+      try {
+        const id = req.params.id;
+
+        // Validate ObjectId
+        if (!ObjectId.isValid(id)) {
+          return res.status(400).json({ error: "Invalid work ID" });
+        }
+
+        const result = await worksCollection.deleteOne({ _id: new ObjectId(id) });
+
+        if (result.deletedCount === 0) {
+          return res.status(404).json({ error: "Work not found" });
+        }
+
+        res.json({ success: true, message: "Work deleted successfully" });
+      } catch (error) {
+        console.error("Delete work error:", error);
+        res.status(500).json({ error: "Failed to delete work" });
+      }
+    });
 
 
 
