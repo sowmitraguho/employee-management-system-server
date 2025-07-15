@@ -37,6 +37,7 @@ async function run() {
     const db = client.db("emsDB");
     const worksCollection = db.collection("works");
     const usersCollection = db.collection("users");
+    const paymentsCollection = db.collection("paymenthistory");
 
     // Default route
     app.get("/", (req, res) => {
@@ -139,6 +140,32 @@ async function run() {
 
       res.json(result);
     });
+
+    //payment 
+    // GET /payments/:email
+    app.get("/payments/:email", async (req, res) => {
+      const { email } = req.params;
+      // const page = parseInt(req.query.page) || 1;
+      // const limit = parseInt(req.query.limit) || 5;
+      // const skip = (page - 1) * limit;
+
+      const totalCount = await paymentsCollection.countDocuments({ employeeEmail: email });
+
+      // const payments = await paymentsCollection
+      //   .find({ employeeEmail: email })
+      //   .sort({ year: 1, month: 1 }) // earliest month first
+      //   .skip(skip)
+      //   .limit(limit)
+      //   .toArray();
+
+      const payments = await paymentsCollection.find({ employeeEmail: email }).toArray();
+      res.json({
+        payments,
+        //totalPages: Math.ceil(totalCount / limit),
+        //currentPage: page,
+      });
+    });
+
 
 
     // Send a ping to confirm a successful connection
