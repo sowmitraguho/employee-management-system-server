@@ -82,11 +82,24 @@ async function run() {
 
 
     // GET works for a specific employee by email
+    // app.get('/works', async (req, res) => {
+    //   const email = req.query.email;
+    //   const works = await worksCollection.find({ email }).sort({ assignedDate: -1 }).toArray();
+    //   res.send(works);
+    // });
     app.get('/works', async (req, res) => {
       const email = req.query.email;
+      console.log("Query email:", email); // <-- Debug log
+
       const works = await worksCollection.find({ email }).sort({ assignedDate: -1 }).toArray();
+      console.log("Found works:", works.length); // <-- Debug log
+
       res.send(works);
     });
+
+
+
+
 
     //post works by employee
     app.post("/works", async (req, res) => {
