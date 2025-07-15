@@ -6,8 +6,22 @@ require("dotenv").config();
 const app = express();
 const port = process.env.PORT || 5000;
 
+//cors setup
+const allowedOrigins = [
+  "http://localhost:5173"  // ✅ Local frontend
+  //"https://your-frontend-domain.com" // ✅ Production frontend
+];
+
+app.use(
+  cors({
+    origin: allowedOrigins,
+    credentials: true, // ✅ allow cookies/auth headers
+  })
+);
+
+
+
 // Middleware
-app.use(cors());
 app.use(express.json());
 
 // DB Connection
@@ -36,25 +50,25 @@ async function run() {
 
     // Get users by email
     app.get("/users/:email", async (req, res) => {
-  try {
-    const email = req.params.email;
+      try {
+        const email = req.params.email;
 
-    if (!email) {
-      return res.status(400).json({ message: "Email is required" });
-    }
+        if (!email) {
+          return res.status(400).json({ message: "Email is required" });
+        }
 
-    const user = await usersCollection.findOne({ email });
+        const user = await usersCollection.findOne({ email });
 
-    if (!user) {
-      return res.status(404).json({ message: "User not found" });
-    }
+        if (!user) {
+          return res.status(404).json({ message: "User not found" });
+        }
 
-    res.json(user);
-  } catch (error) {
-    console.error("Error fetching user:", error);
-    res.status(500).json({ message: "Internal Server Error" });
-  }
-});
+        res.json(user);
+      } catch (error) {
+        console.error("Error fetching user:", error);
+        res.status(500).json({ message: "Internal Server Error" });
+      }
+    });
 
 
 
