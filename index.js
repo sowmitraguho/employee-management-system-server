@@ -35,6 +35,7 @@ async function run() {
     await client.connect();
 
     const db = client.db("emsDB");
+    const worksCollection = db.collection("works");
     const usersCollection = db.collection("users");
 
     // Default route
@@ -79,6 +80,13 @@ async function run() {
       res.send(result);
     });
 
+
+    // GET works for a specific employee by email
+    app.get('/api/works', async (req, res) => {
+      const email = req.query.email;
+      const works = await worksCollection.find({ email }).sort({ assignedDate: -1 }).toArray();
+      res.send(works);
+    });
 
 
     // Send a ping to confirm a successful connection
