@@ -50,6 +50,35 @@ async function run() {
       res.send(users);
     });
 
+    // GET all employees (role = Employee)
+    app.get("/users", async (req, res) => {
+      try {
+        const role = req.query.role;
+
+        let filter = {};
+        if (role) {
+          filter.role = role;
+        }
+
+        const users = await usersCollection.find(filter).toArray();
+
+        // ✅ Ensure isVerified defaults to false if not present
+        const result = users.map(user => ({
+          ...user,
+          isVerified: user.isVerified || false,
+        }));
+
+        res.json(result);
+      } catch (error) {
+        console.error("Error fetching users:", error);
+        res.status(500).json({ message: "Internal server error" });
+      }
+    });
+
+
+
+
+
     // Get users by email
     app.get("/users/:email", async (req, res) => {
       try {
@@ -141,31 +170,7 @@ async function run() {
       res.json(result);
     });
 
-    //payment 
     // GET /payments/:email
-    // app.get("/payments/:email", async (req, res) => {
-    //   const { email } = req.params;
-    //   // const page = parseInt(req.query.page) || 1;
-    //   // const limit = parseInt(req.query.limit) || 5;
-    //   // const skip = (page - 1) * limit;
-
-    //   const totalCount = await paymentsCollection.countDocuments({ employeeEmail: email });
-
-    //   // const payments = await paymentsCollection
-    //   //   .find({ employeeEmail: email })
-    //   //   .sort({ year: 1, month: 1 }) // earliest month first
-    //   //   .skip(skip)
-    //   //   .limit(limit)
-    //   //   .toArray();
-
-    //   const payments = await paymentsCollection.find({ employeeEmail: email }).toArray();
-    //   // res.json({
-    //   //   payments,
-    //   //   //totalPages: Math.ceil(totalCount / limit),
-    //   //   //currentPage: page,
-    //   // });
-    //   res.json(payments);
-    // });
     app.get("/payments/:email", async (req, res) => {
       try {
         const { email } = req.params;
@@ -225,6 +230,16 @@ async function run() {
       }
     });
 
+    app.patch("/employees/verify/:email", async (req, res) => {
+      const { email } = req.params;
+      const { isVerified } = req.body; // true/false
+      const result = await usersCollection.updateOne(
+        { email },
+        { $set: { isVerified } },
+        { upsert: false }
+      );
+      res.json(result);
+    });
 
 
 
