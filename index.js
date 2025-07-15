@@ -143,29 +143,88 @@ async function run() {
 
     //payment 
     // GET /payments/:email
+    // app.get("/payments/:email", async (req, res) => {
+    //   const { email } = req.params;
+    //   // const page = parseInt(req.query.page) || 1;
+    //   // const limit = parseInt(req.query.limit) || 5;
+    //   // const skip = (page - 1) * limit;
+
+    //   const totalCount = await paymentsCollection.countDocuments({ employeeEmail: email });
+
+    //   // const payments = await paymentsCollection
+    //   //   .find({ employeeEmail: email })
+    //   //   .sort({ year: 1, month: 1 }) // earliest month first
+    //   //   .skip(skip)
+    //   //   .limit(limit)
+    //   //   .toArray();
+
+    //   const payments = await paymentsCollection.find({ employeeEmail: email }).toArray();
+    //   // res.json({
+    //   //   payments,
+    //   //   //totalPages: Math.ceil(totalCount / limit),
+    //   //   //currentPage: page,
+    //   // });
+    //   res.json(payments);
+    // });
     app.get("/payments/:email", async (req, res) => {
-      const { email } = req.params;
-      // const page = parseInt(req.query.page) || 1;
-      // const limit = parseInt(req.query.limit) || 5;
-      // const skip = (page - 1) * limit;
+  try {
+    const { email } = req.params;
 
-      const totalCount = await paymentsCollection.countDocuments({ employeeEmail: email });
+    // Pagination params
+    const page = parseInt(req.query.page) || 1;
+    const limit = parseInt(req.query.limit) || 5;
 
-      // const payments = await paymentsCollection
-      //   .find({ employeeEmail: email })
-      //   .sort({ year: 1, month: 1 }) // earliest month first
-      //   .skip(skip)
-      //   .limit(limit)
-      //   .toArray();
+    // Find the employee document
+    const employee = await paymentsCollection.findOne({ email: email });
 
-      const payments = await paymentsCollection.find({ employeeEmail: email }).toArray();
-      // res.json({
-      //   payments,
-      //   //totalPages: Math.ceil(totalCount / limit),
-      //   //currentPage: page,
-      // });
-      res.json(payments);
+    if (!employee) {
+      return res.status(404).json({ message: "Employee not found" });
+    }
+
+    // Extract payment history
+    let history = employee.paymentHistory || [];
+
+    // ✅ Sort earliest month/year first
+    history.sort((a, b) => {
+      if (a.year !== b.year) return a.year - b.year;
+      const monthsOrder = [
+        "January",
+        "February",
+        "March",
+        "April",
+        "May",
+        "June",
+        "July",
+        "August",
+        "September",
+        "October",
+        "November",
+        "December"
+      ];
+      return monthsOrder.indexOf(a.month) - monthsOrder.indexOf(b.month);
     });
+
+    // ✅ Pagination
+    const totalCount = history.length;
+    const totalPages = Math.ceil(totalCount / limit);
+    const startIndex = (page - 1) * limit;
+    const paginatedHistory = history.slice(startIndex, startIndex + limit);
+
+    res.json({
+      email: employee.email,
+      designation: employee.designation,
+      payments: paginatedHistory,
+      totalPages,
+      currentPage: page,
+      totalCount
+    });
+
+  } catch (error) {
+    console.error("Error fetching payments:", error);
+    res.status(500).json({ message: "Internal server error" });
+  }
+});
+
 
 
 
