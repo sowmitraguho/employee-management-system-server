@@ -230,17 +230,17 @@ async function run() {
       }
     });
 
-    app.patch("/users/:id", async (req, res) => {
-      const { email } = req.params;
-      const { isVerified } = req.body; // true/false
-      const result = await usersCollection.updateOne(
-        { email },
-        { $set: { isVerified } },
-        { upsert: false }
-      );
-      res.json(result);
-    });
+    app.patch('/users/:id', async (req, res) => {
+      const { id } = req.params;
+      const { isVerified } = req.body;
 
+      const result = await usersCollection.updateOne(
+        { _id: new ObjectId(id) },
+        { $set: { isVerified } }  // if field doesn't exist, it will be created
+      );
+
+      res.send(result);
+    });
 
 
     // Send a ping to confirm a successful connection
