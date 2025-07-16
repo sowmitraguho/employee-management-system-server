@@ -70,7 +70,11 @@ const router = express.Router();
   try {
     // ✅ Always save as string (to match existing DB)
     Salary = String(Salary);
-
+    console.log(userId);
+     // ✅ Validate MongoDB ID
+  if (!ObjectId.isValid(id)) {
+    return res.status(400).json({ message: "Invalid user ID" });
+  }
     const result = await usersCollection.updateOne(
       { _id: new ObjectId(userId) },
       { $set: { Salary } }
