@@ -5,7 +5,7 @@ require("dotenv").config();
 
 const router = express.Router();
 
- function usersRoutes(db) {
+function usersRoutes(db) {
   const usersCollection = db.collection("users");
 
   // ✅ GET /users/verified → only verified & not fired
@@ -61,20 +61,24 @@ const router = express.Router();
   router.patch("/:id/salary", async (req, res) => {
     const userId = req.params.id;
     const { Salary } = req.body;
-
     if (!Salary || isNaN(Salary))
       return res.status(400).json({ message: "Invalid salary" });
-    
-
     try {
-      const result = await usersCollection.updateOne(
-        { _id: new ObjectId(userId) },
-        { $set: { Salary: Number(Salary) } }
-      );
-      if (result.modifiedCount === 0)
+      // Check if user exists before attempting to update
+      const userExists = await usersCollection.countDocuments({ _id: new ObjectId(userId) });
+      if (userExists === 0) {
         return res.status(404).json({ message: "User not found" });
-
-      res.json({ message: "Salary updated successfully" });
+      } else {
+        const result = await usersCollection.updateOne(
+          { _id: new ObjectId(userId) },
+          { $set: { Salary: Number(Salary) } }
+        );
+        if (result.modifiedCount === 0) {
+          // User found, but salary wasn't modified (e.g., same salary provided)
+          return res.status(200).json({ message: "Salary is already the same or no changes were made." });
+        }
+      }
+      return res.json({ message: "Salary updated successfully" });
     } catch (err) {
       console.error("Error updating salary:", err);
       res.status(500).json({ message: "Failed to update salary" });
