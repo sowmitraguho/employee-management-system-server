@@ -59,39 +59,26 @@ const router = express.Router();
 
   // ✅ PATCH /users/:id/salary → update salary
   router.patch("/:id/salary", async (req, res) => {
-  const userId = req.params.id;
-  let { Salary } = req.body;
+    const userId = req.params.id;
+    const { Salary } = req.body;
 
-  // ✅ Extra check for empty or invalid input
-  if (!Salary || isNaN(Salary)) {
-    return res.status(400).json({ message: "Invalid salary" });
-  }
+    if (!Salary || isNaN(Salary))
+      return res.status(400).json({ message: "Invalid salary" });
 
-  try {
-    // ✅ Always save as string (to match existing DB)
-    Salary = String(Salary);
-    console.log(userId);
-     // ✅ Validate MongoDB ID
-  if (!ObjectId.isValid(id)) {
-    return res.status(400).json({ message: "Invalid user ID" });
-  }
-    const result = await usersCollection.updateOne(
-      { _id: new ObjectId(userId) },
-      { $set: { Salary } }
-    );
+    try {
+      const result = await usersCollection.updateOne(
+        { _id: new ObjectId(userId) },
+        { $set: { Salary: Number(Salary) } }
+      );
+      if (result.modifiedCount === 0)
+        return res.status(404).json({ message: "User not found" });
 
-    if (result.matchedCount === 0) {
-      return res.status(404).json({ message: "User not found",
-      result: result });
+      res.json({ message: "Salary updated successfully" });
+    } catch (err) {
+      console.error("Error updating salary:", err);
+      res.status(500).json({ message: "Failed to update salary" });
     }
-
-    res.json({ message: "Salary updated successfully"
-     });
-  } catch (err) {
-    console.error("Error updating salary:", err);
-    res.status(500).json({ message: "Failed to update salary" });
-  }
-});
+  });
 
   return router;
 }
