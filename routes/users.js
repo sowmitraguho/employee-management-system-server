@@ -10,7 +10,7 @@ export default function usersRoutes(db) {
   router.get("/verified", async (req, res) => {
     try {
       const verifiedUsers = await usersCollection
-        .find({ verified: true })
+        .find({ isVerified: true })
         .toArray();
       res.json(verifiedUsers);
     } catch (err) {
@@ -66,7 +66,7 @@ export default function usersRoutes(db) {
     try {
       const result = await usersCollection.updateOne(
         { _id: new ObjectId(userId) },
-        { $set: { salary: Number(salary) } }
+        { $set: { Salary: Number(salary) } }
       );
       if (result.modifiedCount === 0)
         return res.status(404).json({ message: "User not found" });
