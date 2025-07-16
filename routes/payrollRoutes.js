@@ -18,15 +18,7 @@ function payrollRoutes(db) {
 
       if (!employee) return res.status(404).json({ message: "Employee not found" });
 
-      const payrollData = {
-        employeeId: employee._id,
-        employeeName: employee.name,
-        amount: employee.salary,
-        month: "July 2025",
-        requestedBy: "hr@example.com", // ✅ Replace with logged-in HR email
-        status: "pending",
-        createdAt: new Date(),
-      };
+      const payrollData = {...employee, createdAt: new Date()};
 
       const result = await payrollCollection.insertOne(payrollData);
       res.json(result);
