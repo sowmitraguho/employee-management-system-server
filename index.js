@@ -251,7 +251,7 @@ async function run() {
     });
 
     // ✅ Mount user routes
-    app.use("/users", usersRoutes(db));
+    app.use("/vfusers", usersRoutes(db));
 
 
     // Send a ping to confirm a successful connection
