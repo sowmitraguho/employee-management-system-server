@@ -64,6 +64,8 @@ const router = express.Router();
 
     if (!Salary || isNaN(Salary))
       return res.status(400).json({ message: "Invalid salary" });
+    if (!ObjectId(userId))
+      return res.status(400).json({ message: "Invalid I" });
 
     try {
       const result = await usersCollection.updateOne(
