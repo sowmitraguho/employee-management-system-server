@@ -1,9 +1,11 @@
-import express from "express";
-import { ObjectId } from "mongodb";
+const express = require("express");
+const cors = require("cors");
+const { MongoClient, ServerApiVersion, ObjectId } = require("mongodb");
+require("dotenv").config();
 
 const router = express.Router();
 
-export default function usersRoutes(db) {
+ function usersRoutes(db) {
   const usersCollection = db.collection("users");
 
   // ✅ GET /users/verified → only verified & not fired
@@ -80,3 +82,4 @@ export default function usersRoutes(db) {
 
   return router;
 }
+module.exports = usersRoutes;

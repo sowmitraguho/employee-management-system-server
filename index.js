@@ -2,6 +2,9 @@ const express = require("express");
 const cors = require("cors");
 const { MongoClient, ServerApiVersion, ObjectId } = require("mongodb");
 require("dotenv").config();
+// ✅ Import your user routes
+//import usersRoutes from "./routes/users.js";
+const usersRoutes = require("./routes/users");
 
 const app = express();
 const port = process.env.PORT || 5000;
@@ -19,8 +22,7 @@ app.use(
   })
 );
 
-// ✅ Import your user routes
-import usersRoutes from "./routes/users.js";
+
 
 
 // Middleware
@@ -41,6 +43,8 @@ async function run() {
     const usersCollection = db.collection("users");
     const paymentsCollection = db.collection("paymenthistory");
 
+
+
     // Default route
     app.get("/", (req, res) => {
       res.send("Employee Management API Running");
@@ -52,7 +56,7 @@ async function run() {
       res.send(users);
     });
 
-     
+
 
     // GET all employees (role = Employee)
     app.get("/users", async (req, res) => {
