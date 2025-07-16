@@ -5,6 +5,8 @@ require("dotenv").config();
 // ✅ Import your user routes
 //import usersRoutes from "./routes/users.js";
 const usersRoutes = require("./routes/users");
+// ✅ Import payroll routes
+const payrollRoutes = require("./routes/payrollRoutes");
 
 const app = express();
 const port = process.env.PORT || 5000;
@@ -256,6 +258,8 @@ async function run() {
 
     // ✅ Mount user routes
     app.use("/vfusers", usersRoutes(db));
+    // ✅ Use payroll routes
+    app.use("/payroll", payrollRoutes(db));
 
 
     // Send a ping to confirm a successful connection
