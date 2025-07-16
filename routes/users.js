@@ -60,15 +60,15 @@ const router = express.Router();
   // ✅ PATCH /users/:id/salary → update salary
   router.patch("/:id/salary", async (req, res) => {
     const userId = req.params.id;
-    const { salary } = req.body;
+    const { Salary } = req.body;
 
-    if (!salary || isNaN(salary))
+    if (!Salary || isNaN(Salary))
       return res.status(400).json({ message: "Invalid salary" });
 
     try {
       const result = await usersCollection.updateOne(
         { _id: new ObjectId(userId) },
-        { $set: { Salary: Number(salary) } }
+        { $set: { Salary: Salary } }
       );
       if (result.modifiedCount === 0)
         return res.status(404).json({ message: "User not found" });
