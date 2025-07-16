@@ -116,70 +116,16 @@ async function run() {
       const email = req.query.email;
       console.log("Query email:", email); // <-- Debug log
 
-      const works = await worksCollection.find({ email }).sort({ assignedDate: -1 }).toArray();
+      let works;
+      if (email) {
+        works = await worksCollection.find({ email }).sort({ assignedDate: -1 }).toArray();
+      } else {
+        works = await worksCollection.find().sort({ assignedDate: -1 }).toArray();
+      }
       console.log("Found works:", works.length); // <-- Debug log
 
       res.send(works);
     });
-
-    // GET /works - get all works or filter by email and/or month
-app.get('/works', async (req, res) => {
-  try {
-    const { email, month } = req.query;
-
-    // Build a filter object dynamically
-    let filter = {};
-
-    if (email) {
-      filter.email = email;
-    }
-
-    // If month filter is provided (e.g. "July"), filter by completionDate month
-    if (month) {
-      // MongoDB aggregation would be better for month filtering, 
-      // but here is a simple workaround with regex on ISO date string
-      // assuming completionDate stored as ISO string "YYYY-MM-DD"
-
-      // Regex to match dates with the month number in MM format
-      // But months are names, so better to convert month name to number first
-
-      const monthNames = [
-        "January", "February", "March", "April", "May", "June",
-        "July", "August", "September", "October", "November", "December"
-      ];
-      const monthIndex = monthNames.indexOf(month);
-
-      if (monthIndex !== -1) {
-        // Match completionDate starting with year and month (MM is 01-based)
-        // We build a range filter for the month
-
-        const yearStart = new Date().getFullYear(); // or you can add year filter if you want
-
-        const startDate = new Date(yearStart, monthIndex, 1);
-        const endDate = new Date(yearStart, monthIndex + 1, 1);
-
-        filter.completionDate = {
-          $gte: startDate.toISOString().slice(0, 10),
-          $lt: endDate.toISOString().slice(0, 10)
-        };
-      }
-    }
-
-    const works = await worksCollection
-      .find(filter)
-      .sort({ assignedDate: -1 })
-      .toArray();
-
-    console.log(`Found works: ${works.length} for filter`, filter);
-
-    res.send(works);
-  } catch (error) {
-    console.error('Error fetching works:', error);
-    res.status(500).send({ error: 'Failed to fetch works' });
-  }
-});
-
-
 
 
 
