@@ -111,6 +111,15 @@ async function run() {
     });
 
 
+    // GET all works 
+    app.get('/works', async (req, res) => {
+      
+
+      const works = await worksCollection.find().toArray();
+      console.log("Found works:", works.length); // <-- Debug log
+
+      res.send(works);
+    });
     // GET works for a specific employee by email
     app.get('/works', async (req, res) => {
       const email = req.query.email;
