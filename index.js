@@ -52,8 +52,7 @@ async function run() {
       res.send(users);
     });
 
-     // ✅ Mount user routes
-    app.use("/users", usersRoutes(db));
+     
 
     // GET all employees (role = Employee)
     app.get("/users", async (req, res) => {
@@ -250,6 +249,9 @@ async function run() {
 
       res.send(result);
     });
+
+    // ✅ Mount user routes
+    app.use("/users", usersRoutes(db));
 
 
     // Send a ping to confirm a successful connection
