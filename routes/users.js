@@ -77,10 +77,12 @@ const router = express.Router();
     );
 
     if (result.matchedCount === 0) {
-      return res.status(404).json({ message: "User not found" });
+      return res.status(404).json({ message: "User not found",
+      result: result });
     }
 
-    res.json({ message: "Salary updated successfully" });
+    res.json({ message: "Salary updated successfully"
+     });
   } catch (err) {
     console.error("Error updating salary:", err);
     res.status(500).json({ message: "Failed to update salary" });
