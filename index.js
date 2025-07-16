@@ -19,6 +19,8 @@ app.use(
   })
 );
 
+// ✅ Import your user routes
+import usersRoutes from "./routes/users.js";
 
 
 // Middleware
@@ -49,6 +51,9 @@ async function run() {
       const users = await usersCollection.find().toArray();
       res.send(users);
     });
+
+     // ✅ Mount user routes
+    app.use("/users", usersRoutes(db));
 
     // GET all employees (role = Employee)
     app.get("/users", async (req, res) => {
