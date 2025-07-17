@@ -14,40 +14,23 @@ function payrollRoutes(db) {
     router.post("/request", async (req, res) => {
         try {
             const { employeeId } = req.body;
-
-            let queryId;
-            if (ObjectId.isValid(employeeId)) {
-                queryId = new ObjectId(employeeId);  // ✅ Try as ObjectId
-            } else {
-                return res.status(400).json({ message: "Invalid employee ID" });
-            }
-
-            const employee = await usersCollection.findOne({ _id: queryId });
+            let employee = await usersCollection.findOne({ _id: new ObjectId(employeeId) });
 
             if (!employee) {
-                return res.status(404).json({ message: "Employee not found" });
-            }
+                employee = await usersCollection.findOne({ _id: String(employeeId) });
 
-            // ✅ Create payrollData without copying entire employee object
-            const payrollData = {
-                employeeId: employee._id,
-                employeeName: employee.name,
-                amount: employee.salary,
-                month: "July 2025",
-                requestedBy: "hr@example.com", // ✅ Replace with logged-in HR
-                status: "pending",
-                createdAt: new Date(),
+                if (!employee) return res.status(404).json({ message: "Employee not found" });
             };
+            const {_id, ...paidEmployee} = employee;
+            const payrollData = { ...paidmployee, createdAt: new Date() };
 
             const result = await payrollCollection.insertOne(payrollData);
             return res.json(result);
-
         } catch (error) {
             console.error("Error creating payroll request:", error);
             res.status(500).json({ message: "Server error" });
         }
     });
-
 
     // ✅ Admin approves/rejects payroll
     router.patch("/:id", async (req, res) => {
