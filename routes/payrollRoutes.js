@@ -31,7 +31,8 @@ function payrollRoutes(db) {
             }
             //const { _id, ...paidEmployee } = employee;
             delete requestData.employeeId;
-            const payrollData = { requestData, createdAt: new Date() };
+            requestData.createdAt = new Date();
+            const payrollData = re;
 
             const result = await payrollCollection.insertOne(payrollData);
             return res.json(result);
