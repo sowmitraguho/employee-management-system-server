@@ -17,12 +17,12 @@ function payrollRoutes(db) {
             let employee = await usersCollection.findOne({ _id: new ObjectId(employeeId) });
 
             if (!employee) {
-                employee = await usersCollection.findOne({ _id: String(employeeId) });
+                employee = await usersCollection.findOne({ _id: employeeId });
 
                 if (!employee) return res.status(404).json({ message: "Employee not found" });
             };
             const {_id, ...paidEmployee} = employee;
-            const payrollData = { ...paidmployee, createdAt: new Date() };
+            const payrollData = { ...paidEmployee, createdAt: new Date() };
 
             const result = await payrollCollection.insertOne(payrollData);
             return res.json(result);
