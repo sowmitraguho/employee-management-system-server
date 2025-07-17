@@ -20,7 +20,7 @@ function payrollRoutes(db) {
             if (!employee) {
                 employee = await usersCollection.findOne({ _id: employeeId });
 
-                if (!employee) return res.status(404).json({ message: "Employee not found" });
+                if (!employee) return res.status(404).json({ message: `Employee not found with this id${em}` });
             };
             const {_id, ...paidEmployee} = employee;
             const payrollData = { ...paidEmployee, createdAt: new Date() };
