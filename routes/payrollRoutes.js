@@ -13,23 +13,23 @@ function payrollRoutes(db) {
     router.post("/request", async (req, res) => {
         try {
             const requestData = req.body;
-            //const employeeId = requestData.employeeId;
+            const paidId = requestData.employeeId;
             
-            // let employee;
-            // const isValidObjectId = ObjectId.isValid(employeeId);
-            // if (isValidObjectId) {
-            //     employee = await usersCollection.find({ _id: new ObjectId(employeeId) });
-            // }
+            let employee;
+            const isValidObjectId = ObjectId.isValid(paidId);
+            if (isValidObjectId) {
+                employee = await usersCollection.find({ _id: new ObjectId(paidId) });
+            }
 
-            // // ✅ If not found, also try plain string match
-            // if (!employee) {
-            //     employee = await usersCollection.findOne({ _id: employeeId });
-            // }
+            // ✅ If not found, also try plain string match
+            if (!employee) {
+                employee = await usersCollection.findOne({ _id: paidId });
+            }
 
-            // if (!employee) {
-            //     return res.status(404).json({ message: `Employee not found ${employeeId}` });
-            // }
-            const { employeeId, ...paidEmployee } = re;
+            if (!employee) {
+                return res.status(404).json({ message: `Employee not found ${paid}` });
+            }
+            const { employeeId, ...paidEmployee } = employee;
             const payrollData = { ...paidEmployee, createdAt: new Date() };
 
             const result = await payrollCollection.insertOne(payrollData);
