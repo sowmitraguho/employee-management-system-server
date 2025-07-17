@@ -14,17 +14,22 @@ function payrollRoutes(db) {
     router.post("/request", async (req, res) => {
         try {
             const { employeeId } = req.body;
-            
-            let employee;
-            if (ObjectId.isValid(employeeId)) employee = await usersCollection.findOne({ _id: ObjectId.createFromHexString(employeeId)});
-            
 
+            let employee;
+            if (typeof employeeId === "string" && ObjectId.isValid(employeeId) && employeeId.length === 24) {
+                employee = await usersCollection.findOne({ _id: new ObjectId(employeeId) });
+            }
+
+
+            // ✅ If not found, also try plain string match
             if (!employee) {
                 employee = await usersCollection.findOne({ _id: employeeId });
+            }
 
-                if (!employee) return res.status(404).json({ message: `Employee not found with this id${employeeId}` });
-            };
-            const {_id, ...paidEmployee} = employee;
+            if (!employee) {
+                return res.status(404).json({ message: "Employee not found" });
+            }
+            const { _id, ...paidEmployee } = employee;
             const payrollData = { ...paidEmployee, createdAt: new Date() };
 
             const result = await payrollCollection.insertOne(payrollData);
