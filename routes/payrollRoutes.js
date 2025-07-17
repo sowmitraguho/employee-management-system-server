@@ -1,35 +1,35 @@
 const express = require("express");
 const cors = require("cors");
-const { ObjectId } = require("mongodb");
+const { MongoClient, ServerApiVersion, ObjectId } = require("mongodb");
 require("dotenv").config();
 
 const router = express.Router();
 
 function payrollRoutes(db) {
-    const router = express.Router();
     const payrollCollection = db.collection("payroll");
     const usersCollection = db.collection("users");
 
     // ✅ HR sends payroll request
     router.post("/request", async (req, res) => {
         try {
-            const { employeeId } = req.body;
+            const requestData = req.body;
+            //const employeeId = requestData.employeeId;
+            
+            // let employee;
+            // const isValidObjectId = ObjectId.isValid(employeeId);
+            // if (isValidObjectId) {
+            //     employee = await usersCollection.find({ _id: new ObjectId(employeeId) });
+            // }
 
-            let employee;
-            if (typeof employeeId === "string" && ObjectId.isValid(employeeId) && employeeId.length === 24) {
-                employee = await usersCollection.findOne({ _id: new ObjectId(employeeId) });
-            }
+            // // ✅ If not found, also try plain string match
+            // if (!employee) {
+            //     employee = await usersCollection.findOne({ _id: employeeId });
+            // }
 
-
-            // ✅ If not found, also try plain string match
-            if (!employee) {
-                employee = await usersCollection.findOne({ _id: employeeId });
-            }
-
-            if (!employee) {
-                return res.status(404).json({ message: "Employee not found" });
-            }
-            const { _id, ...paidEmployee } = employee;
+            // if (!employee) {
+            //     return res.status(404).json({ message: `Employee not found ${employeeId}` });
+            // }
+            const { employeeId, ...paidEmployee } = re;
             const payrollData = { ...paidEmployee, createdAt: new Date() };
 
             const result = await payrollCollection.insertOne(payrollData);
@@ -68,7 +68,7 @@ function payrollRoutes(db) {
     router.get("/", async (req, res) => {
         try {
             const payrolls = await payrollCollection.find().toArray();
-            res.json(payrolls);
+            return res.json(payrolls);
         } catch (error) {
             console.error("Error fetching payroll data:", error);
             res.status(500).json({ message: "Server error" });
