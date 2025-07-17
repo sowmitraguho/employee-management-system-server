@@ -32,9 +32,9 @@ function payrollRoutes(db) {
             //const { _id, ...paidEmployee } = employee;
             delete requestData.employeeId;
             requestData.createdAt = new Date();
-            const payrollData = re;
+            //const payrollData = requestData;
 
-            const result = await payrollCollection.insertOne(payrollData);
+            const result = await payrollCollection.insertOne(requestData);
             return res.json(result);
         } catch (error) {
             console.error("Error creating payroll request:", error);
