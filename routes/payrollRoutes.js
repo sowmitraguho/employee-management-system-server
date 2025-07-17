@@ -14,13 +14,15 @@ function payrollRoutes(db) {
     router.post("/request", async (req, res) => {
         try {
             const { employeeId } = req.body;
+            
             let employee;
-            //employee = await usersCollection.findOne({ _id: new ObjectId(employeeId) });
+            if (ObjectId.isValid(employeeId)) employee = await usersCollection.findOne({ _id: ObjectId.createFromHexString(employeeId)});
+            
 
             if (!employee) {
                 employee = await usersCollection.findOne({ _id: employeeId });
 
-                if (!employee) return res.status(404).json({ message: `Employee not found with this id${em}` });
+                if (!employee) return res.status(404).json({ message: `Employee not found with this id${employeeId}` });
             };
             const {_id, ...paidEmployee} = employee;
             const payrollData = { ...paidEmployee, createdAt: new Date() };
