@@ -14,7 +14,8 @@ function payrollRoutes(db) {
     router.post("/request", async (req, res) => {
         try {
             const { employeeId } = req.body;
-            let employee = await usersCollection.findOne({ _id: new ObjectId(employeeId) });
+            let employee;
+            //employee = await usersCollection.findOne({ _id: new ObjectId(employeeId) });
 
             if (!employee) {
                 employee = await usersCollection.findOne({ _id: employeeId });
