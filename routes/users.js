@@ -2,14 +2,14 @@ const express = require("express");
 const cors = require("cors");
 const { MongoClient, ServerApiVersion, ObjectId } = require("mongodb");
 require("dotenv").config();
-
+const verifyFirebaseToken = require("../middlewires/firebaseAuth");
 const router = express.Router();
 
 function usersRoutes(db) {
   const usersCollection = db.collection("users");
 
   // ✅ GET /users/verified → only verified & not fired
-  router.get("/verified", async (req, res) => {
+  router.get("/verified", verifyFirebaseToken, async (req, res) => {
     try {
       const verifiedUsers = await usersCollection
         .find({ isVerified: true })
@@ -22,7 +22,7 @@ function usersRoutes(db) {
   });
 
   // ✅ PATCH /users/:id/fire → mark user as fired
-router.patch("/:id/fire", async (req, res) => {
+router.patch("/:id/fire", verifyFirebaseToken, async (req, res) => {
   const userId = req.params.id;
 
   try {
@@ -68,7 +68,7 @@ router.patch("/:id/fire", async (req, res) => {
   // ✅ PATCH /users/:id/makeHR → update role to HR
 
 
-  router.patch("/:id/makeHR", async (req, res) => {
+  router.patch("/:id/makeHR", verifyFirebaseToken, async (req, res) => {
     const userId = req.params.id;
 
     try {
@@ -112,7 +112,7 @@ router.patch("/:id/fire", async (req, res) => {
 
 
   // ✅ PATCH /users/:id/salary → update salary
-  router.patch("/:id/salary", async (req, res) => {
+  router.patch("/:id/salary", verifyFirebaseToken, async (req, res) => {
     const userId = req.params.id;
     const { Salary } = req.body;
 
