@@ -1,6 +1,8 @@
 const express = require("express");
 const cors = require("cors");
 const { MongoClient, ServerApiVersion, ObjectId } = require("mongodb");
+//const jwt = require('jsonwebtoken');
+const admin = require("firebase-admin");
 require("dotenv").config();
 // ✅ Import your user routes
 //import usersRoutes from "./routes/users.js";
@@ -30,6 +32,34 @@ app.use(
 // Middleware
 app.use(express.json());
 
+
+// ✅ Initialize Firebase Admin with service account
+admin.initializeApp({
+  credential: admin.credential.cert(JSON.parse(process.env.FIREBASE_SERVICE_ACCOUNT)),
+});
+
+// ✅ Middleware to verify Firebase Token
+const verifyFirebaseToken = async (req, res, next) => {
+  const authHeader = req.headers.authorization;
+
+  if (!authHeader || !authHeader.startsWith('Bearer ')) return res.status(401).json({ message: "unauthorized access." });
+
+  const token = authHeader.split(" ")[1];
+
+  try {
+    const decodedUser = await admin.auth().verifyIdToken(token);
+    req.user = decodedUser; // attach decoded Firebase user info
+    next();
+  } catch (error) {
+    return res.status(401).json({ message: "Invalid or expired token", error });
+  }
+  //next();
+};
+
+
+
+
+
 // DB Connection
 const uri = process.env.MONGO_URI;
 const client = new MongoClient(uri, {
@@ -52,23 +82,20 @@ async function run() {
       res.send("Employee Management API Running");
     });
 
-    // Example: GET all users
-    app.get("/users", async (req, res) => {
-      const users = await usersCollection.find().toArray();
-      res.send(users);
-    });
+    // // Example: GET all users
+    // app.get("/users", verifyFirebaseToken, async (req, res) => {
+    //   const users = await usersCollection.find().toArray();
+    //   res.send(users);
+    // });
 
 
 
     // GET all employees (role = Employee)
-    app.get("/users", async (req, res) => {
+    app.get("/users", verifyFirebaseToken, async (req, res) => {
       try {
         const role = req.query.role;
 
-        let filter = {};
-        if (role) {
-          filter.role = role;
-        }
+        const filter = role ? { role } : {};
 
         const users = await usersCollection.find(filter).toArray();
 
@@ -205,7 +232,8 @@ async function run() {
 
         // ✅ Sort earliest month/year first
         history.sort((a, b) => {
-          if (a.year !== b.year) return a.year - b.year;
+          //if (a.year !== b.year) return a.year - b.year;
+          if (a.year !== b.year) return b.year - a.year; // latest year first
           const monthsOrder = [
             "January",
             "February",
