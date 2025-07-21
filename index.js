@@ -22,12 +22,21 @@ const allowedOrigins = [
   "http://localhost:5173"  // ✅ Local frontend
 ];
 
-app.use(
-  cors({
-    origin: allowedOrigins,
-    credentials: true, // ✅ allow cookies/auth headers
-  })
-);
+app.use(cors({
+  origin: (origin, callback) => {
+    if (!origin || allowedOrigins.includes(origin)) {
+      callback(null, true);
+    } else {
+      callback(new Error("CORS blocked"));
+    }
+  },
+  methods: "GET,HEAD,PUT,PATCH,POST,DELETE",
+  allowedHeaders: "Content-Type, Authorization",
+  credentials: true
+}));
+
+// ✅ Allow preflight OPTIONS requests
+app.options("*", cors());
 
 
 
