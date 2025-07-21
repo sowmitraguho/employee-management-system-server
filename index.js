@@ -117,7 +117,7 @@ async function run() {
 
 
     // Get users by email
-    app.get("/users/:email", async (req, res) => {
+    app.get("/users/:email", verifyFirebaseToken, async (req, res) => {
       try {
         const email = req.params.email;
 
@@ -149,7 +149,7 @@ async function run() {
 
 
     // GET works for a specific employee by email
-    app.get('/works', async (req, res) => {
+    app.get('/works', verifyFirebaseToken, async (req, res) => {
       const email = req.query.email;
       console.log("Query email:", email); // <-- Debug log
 
@@ -208,11 +208,11 @@ async function run() {
         { $set: updatedData }
       );
 
-      res.json(result);
+      return res.json(result);
     });
 
     // GET /payments/:email
-    app.get("/payments/:email", async (req, res) => {
+    app.get("/payments/:email", verifyFirebaseToken, async (req, res) => {
       try {
         const { email } = req.params;
 
