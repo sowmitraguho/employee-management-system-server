@@ -15,27 +15,21 @@ const app = express();
 const port = process.env.PORT || 5000;
 
 //cors setup
+
 const allowedOrigins = [
-  "https://mellow-toffee-c45c62.netlify.app",
-  "http://localhost:5173"
+  "https://mellow-toffee-c45c62.netlify.app", // ✅ Production frontend
+  "http://localhost:5173"  // ✅ Local frontend
 ];
 
-const corsOptions = {
-  origin: function (origin, callback) {
-    if (!origin || allowedOrigins.includes(origin)) {
-      callback(null, true);
-    } else {
-      callback(new Error("CORS blocked: " + origin));
-    }
-  },
-  credentials: true,
-  methods: "GET,HEAD,PUT,PATCH,POST,DELETE",
-  allowedHeaders: ["Content-Type", "Authorization"]
-};
+app.use(
+  cors({
+    origin: allowedOrigins,
+    credentials: true, // ✅ allow cookies/auth headers
+  })
+);
 
-// ✅ ONLY ONE CORS MIDDLEWARE
-app.use(cors(corsOptions));
-app.options("*", cors(corsOptions));  // Preflight
+
+
 
 
 
