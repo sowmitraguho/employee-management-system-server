@@ -16,8 +16,8 @@ const port = process.env.PORT || 5000;
 
 //cors setup
 const allowedOrigins = [
-  "http://localhost:5173",  // ✅ Local frontend
-  "https://elaborate-khapse-da6469.netlify.app/" // ✅ Production frontend
+  "https://elaborate-khapse-da6469.netlify.app/", // ✅ Production frontend
+  "http://localhost:5173"  // ✅ Local frontend
 ];
 
 app.use(
@@ -26,6 +26,8 @@ app.use(
     credentials: true, // ✅ allow cookies/auth headers
   })
 );
+
+
 
 
 
