@@ -18,6 +18,7 @@ const port = process.env.PORT || 5000;
 app.use(cors());
 const allowedOrigins = [
   "https://mellow-toffee-c45c62.netlify.app", // ✅ Production frontend
+  "https://mellow-toffee-c45c62.netlify.app/dashboard", // ✅ Production frontend
   "http://localhost:5173"  // ✅ Local frontend
 ];
 
