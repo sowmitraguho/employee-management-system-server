@@ -22,25 +22,25 @@ const allowedOrigins = [
   "http://localhost:5173"  // ✅ Local frontend
 ];
 
-app.use(cors({
-  origin: (origin, callback) => {
+// ✅ Configure CORS
+const corsOptions = {
+  origin: function (origin, callback) {
     if (!origin || allowedOrigins.includes(origin)) {
       callback(null, true);
     } else {
-      callback(new Error("CORS blocked"));
+      callback(new Error("CORS blocked: " + origin));
     }
   },
   methods: "GET,HEAD,PUT,PATCH,POST,DELETE",
-  allowedHeaders: "Content-Type, Authorization",
+  allowedHeaders: ["Content-Type", "Authorization"],
   credentials: true
-}));
+};
 
-// ✅ Allow preflight OPTIONS requests
-app.options("*", cors());
+// ✅ Apply CORS globally
+app.use(cors(corsOptions));
 
-
-
-
+// ✅ Allow preflight OPTIONS requests for all routes
+app.options("*", cors(corsOptions));
 
 
 // Middleware
