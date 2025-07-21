@@ -16,17 +16,17 @@ const port = process.env.PORT || 5000;
 
 //cors setup
 app.use(cors());
-// const allowedOrigins = [
-//   "https://elaborate-khapse-da6469.netlify.app/", // ✅ Production frontend
-//   "http://localhost:5173"  // ✅ Local frontend
-// ];
+const allowedOrigins = [
+  "https://mellow-toffee-c45c62.netlify.app", // ✅ Production frontend
+  "http://localhost:5173"  // ✅ Local frontend
+];
 
-// app.use(
-//   cors({
-//     origin: allowedOrigins,
-//     credentials: true, // ✅ allow cookies/auth headers
-//   })
-// );
+app.use(
+  cors({
+    origin: allowedOrigins,
+    credentials: true, // ✅ allow cookies/auth headers
+  })
+);
 
 
 
