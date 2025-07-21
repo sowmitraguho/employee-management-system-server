@@ -17,6 +17,7 @@ const port = process.env.PORT || 5000;
 const allowedOrigins = [
   "http://localhost:5173"  // ✅ Local frontend
   //"https://your-frontend-domain.com" // ✅ Production frontend
+  
 ];
 
 app.use(

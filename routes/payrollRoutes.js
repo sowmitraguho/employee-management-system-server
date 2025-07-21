@@ -2,7 +2,7 @@ const express = require("express");
 const cors = require("cors");
 const { MongoClient, ServerApiVersion, ObjectId } = require("mongodb");
 require("dotenv").config();
-
+const verifyFirebaseToken = require("../middlewires/firebaseAuth");
 const router = express.Router();
 
 function payrollRoutes(db) {
@@ -67,7 +67,7 @@ function payrollRoutes(db) {
     });
 
     // ✅ Get all payroll requests
-    router.get("/", async (req, res) => {
+    router.get("/", verifyFirebaseToken, async (req, res) => {
         try {
             const payrolls = await payrollCollection.find().toArray();
             return res.json(payrolls);
