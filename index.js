@@ -15,7 +15,7 @@ const app = express();
 const port = process.env.PORT || 5000;
 
 //cors setup
-app.use(cors());
+//app.use(cors());
 const allowedOrigins = [
   "https://mellow-toffee-c45c62.netlify.app", // ✅ Production frontend
   "https://mellow-toffee-c45c62.netlify.app/dashboard", // ✅ Production frontend
