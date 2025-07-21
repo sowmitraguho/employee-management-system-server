@@ -140,12 +140,25 @@ async function run() {
 
 
 
-    // Example: POST a new user
     app.post("/users", async (req, res) => {
-      const user = req.body;
-      const result = await usersCollection.insertOne(user);
-      res.send(result);
+      try {
+        const user = req.body;
+
+        if (!user || !user.email) {
+          return res.status(400).json({ message: "Invalid user data" });
+        }
+
+        const result = await usersCollection.insertOne(user);
+        res.status(201).json({
+          message: "User created successfully",
+          insertedId: result.insertedId,
+        });
+      } catch (error) {
+        console.error("Error inserting user:", error);
+        res.status(500).json({ message: "Internal server error" });
+      }
     });
+
 
 
     // GET works for a specific employee by email
