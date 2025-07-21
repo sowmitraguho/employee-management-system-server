@@ -93,6 +93,23 @@ async function run() {
 
 
     // GET all employees (role = Employee)
+    app.get("/teams", async (req, res) => {
+      try {
+        
+        const users = await usersCollection.find().toArray();
+
+        // ✅ Ensure isVerified defaults to false if not present
+        const result = users.map(user => ({
+          ...user,
+          isVerified: user.isVerified || false,
+        }));
+
+        res.json(result);
+      } catch (error) {
+        console.error("Error fetching users:", error);
+        res.status(500).json({ message: "Internal server error" });
+      }
+    });
     app.get("/users", verifyFirebaseToken, async (req, res) => {
       try {
         const role = req.query.role;
