@@ -235,7 +235,7 @@ async function run() {
         const limit = parseInt(req.query.limit) || 5;
 
         // Find the employee document
-        const employee = await paymentsCollection.find({ mail: email });
+        const employee = await paymentsCollection.find({ email: email });
 
         if (!employee) {
           return res.status(404).json({ message: "Employee not found" });
