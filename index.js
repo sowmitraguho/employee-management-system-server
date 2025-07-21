@@ -9,6 +9,7 @@ require("dotenv").config();
 const usersRoutes = require("./routes/users");
 // ✅ Import payroll routes
 const payrollRoutes = require("./routes/payrollRoutes");
+const makePayments = require("./routes/makePayments");
 
 const app = express();
 const port = process.env.PORT || 5000;
@@ -17,7 +18,7 @@ const port = process.env.PORT || 5000;
 const allowedOrigins = [
   "http://localhost:5173"  // ✅ Local frontend
   //"https://your-frontend-domain.com" // ✅ Production frontend
-  
+
 ];
 
 app.use(
@@ -303,6 +304,8 @@ async function run() {
     app.use("/vfusers", usersRoutes(db));
     // ✅ Use payroll routes
     app.use("/payroll", payrollRoutes(db));
+    // ✅ Payroll routes
+    app.use("/makepayment", makePayments);
 
 
     // Send a ping to confirm a successful connection
