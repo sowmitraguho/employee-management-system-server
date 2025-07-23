@@ -47,7 +47,7 @@ function payrollRoutes(db) {
         try {
             const { status } = req.body;
             const id = req.params.id;
-            if (ObjectId.is(id)) {
+            if (ObjectId.isValid(id)) {
             const result = await payrollCollection.updateOne(
                 { _id: new ObjectId(id) },
                 {
@@ -62,9 +62,7 @@ function payrollRoutes(db) {
                 { employeeEmail: id },
                 {
                     $set: {
-                        status,
-                        approvedBy: "Admin", // ✅ Replace with logged-in Admin
-                        approvedAt: new Date(),
+                        employeeStatus: 'fired'
                     },
                 }
             );   res.json(firedResult);
