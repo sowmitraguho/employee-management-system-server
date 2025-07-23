@@ -47,19 +47,29 @@ function payrollRoutes(db) {
         try {
             const { status } = req.body;
             const id = req.params.id;
-
+            if (ObjectId.is(id)) {
             const result = await payrollCollection.updateOne(
                 { _id: new ObjectId(id) },
                 {
                     $set: {
                         status,
-                        approvedBy: "admin@example.com", // ✅ Replace with logged-in Admin
+                        approvedBy: "Admin", // ✅ Replace with logged-in Admin
                         approvedAt: new Date(),
                     },
                 }
-            );
-
-            res.json(result);
+            );   res.json(result); } else {
+            const firedResult = await payrollCollection.updateOne(
+                { employeeEmail: id },
+                {
+                    $set: {
+                        status,
+                        approvedBy: "Admin", // ✅ Replace with logged-in Admin
+                        approvedAt: new Date(),
+                    },
+                }
+            );   res.json(firedResult);
+        }
+            //res.json(result);
         } catch (error) {
             console.error("Error updating payroll status:", error);
             res.status(500).json({ message: "Server error" });
