@@ -3,10 +3,10 @@ const express = require("express");
 const router = express.Router();
 const Stripe = require("stripe");
 
-// ✅ Load Stripe secret key
+//  Load Stripe secret key
 const stripe = Stripe(process.env.STRIPE_SECRET_KEY);
 
-// ✅ Create Payment Intent route
+//  Create Payment Intent route
 router.post("/create-payment-intent", async (req, res) => {
   try {
     const { amount, currency, employeeId } = req.body;
@@ -26,7 +26,7 @@ router.post("/create-payment-intent", async (req, res) => {
   }
 });
 
-// ✅ Mark payroll as paid (after successful payment)
+//  Mark payroll as paid (after successful payment)
 router.post("/mark-paid", async (req, res) => {
   const { employeeId, paymentId } = req.body;
 

@@ -9,7 +9,7 @@ function payrollRoutes(db) {
     const payrollCollection = db.collection("payroll");
     const usersCollection = db.collection("users");
 
-    // ✅ HR sends payroll request
+    //  HR sends payroll request
     router.post("/request", async (req, res) => {
         try {
             const { employeeId } = req.body;
@@ -21,7 +21,7 @@ function payrollRoutes(db) {
                 employee = await usersCollection.find({ _id: new ObjectId(employeeId) });
             }
 
-            // ✅ If not found, also try plain string match
+            //  If not found, also try plain string match
             if (!employee) {
                 employee = await usersCollection.findOne({ _id: employeeId });
             }
@@ -42,7 +42,7 @@ function payrollRoutes(db) {
         }
     });
 
-    // ✅ Admin approves/rejects payroll
+    //  Admin approves/rejects payroll
     router.patch("/:id", async (req, res) => {
         try {
             const { status } = req.body;
@@ -53,7 +53,7 @@ function payrollRoutes(db) {
                 {
                     $set: {
                         status,
-                        approvedBy: "Admin", // ✅ Replace with logged-in Admin
+                        approvedBy: "Admin", //  Replace with logged-in Admin
                         approvedAt: new Date(),
                     },
                 }
@@ -74,7 +74,7 @@ function payrollRoutes(db) {
         }
     });
 
-    // ✅ Get all payroll requests
+    //  Get all payroll requests
     router.get("/", verifyFirebaseToken, async (req, res) => {
         try {
             const payrolls = await payrollCollection.find().toArray();

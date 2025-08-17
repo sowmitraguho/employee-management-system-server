@@ -4,10 +4,10 @@ const { MongoClient, ServerApiVersion, ObjectId } = require("mongodb");
 //const jwt = require('jsonwebtoken');
 const admin = require("firebase-admin");
 require("dotenv").config();
-// ✅ Import your user routes
+//  Import your user routes
 //import usersRoutes from "./routes/users.js";
 const usersRoutes = require("./routes/users");
-// ✅ Import payroll routes
+//  Import payroll routes
 const payrollRoutes = require("./routes/payrollRoutes");
 const makePayments = require("./routes/makePayments");
 
@@ -17,14 +17,14 @@ const port = process.env.PORT || 5000;
 //cors setup
 
 const allowedOrigins = [
-  "https://mellow-toffee-c45c62.netlify.app", // ✅ Production frontend
-  "http://localhost:5173"  // ✅ Local frontend
+  "https://mellow-toffee-c45c62.netlify.app", //  Production frontend
+  "http://localhost:5173"  //  Local frontend
 ];
 
 app.use(
   cors({
     origin: allowedOrigins,
-    credentials: true, // ✅ allow cookies/auth headers
+    credentials: true, //  allow cookies/auth headers
   })
 );
 
@@ -37,12 +37,12 @@ app.use(
 app.use(express.json());
 
 
-// ✅ Initialize Firebase Admin with service account
+//  Initialize Firebase Admin with service account
 admin.initializeApp({
   credential: admin.credential.cert(JSON.parse(process.env.FIREBASE_SERVICE_ACCOUNT)),
 });
 
-// ✅ Middleware to verify Firebase Token
+//  Middleware to verify Firebase Token
 const verifyFirebaseToken = async (req, res, next) => {
   const authHeader = req.headers.authorization;
 
@@ -78,6 +78,7 @@ async function run() {
     const worksCollection = db.collection("works");
     const usersCollection = db.collection("users");
     const paymentsCollection = db.collection("paymenthistory");
+    const heroSectionDataCollection = db.collection("heroSectionData");
 
 
 
@@ -100,7 +101,7 @@ async function run() {
         
         const users = await usersCollection.find().toArray();
 
-        // ✅ Ensure isVerified defaults to false if not present
+        //  Ensure isVerified defaults to false if not present
         const result = users.map(user => ({
           ...user,
           isVerified: user.isVerified || false,
@@ -120,7 +121,7 @@ async function run() {
 
         const users = await usersCollection.find(filter).toArray();
 
-        // ✅ Ensure isVerified defaults to false if not present
+        //  Ensure isVerified defaults to false if not present
         const result = users.map(user => ({
           ...user,
           isVerified: user.isVerified || false,
@@ -200,7 +201,7 @@ async function run() {
 
 
 
-    // ✅ DELETE work by ID
+    //  DELETE work by ID
     app.delete("/works/:id", async (req, res) => {
       try {
         const id = req.params.id;
@@ -264,7 +265,7 @@ async function run() {
         // Extract payment history
         let history = employee.paymentHistory || [];
 
-        // ✅ Sort earliest month/year first
+        //  Sort earliest month/year first
         history.sort((a, b) => {
           //if (a.year !== b.year) return a.year - b.year;
           if (a.year !== b.year) return b.year - a.year; // latest year first
@@ -285,7 +286,7 @@ async function run() {
           return monthsOrder.indexOf(b.month) - monthsOrder.indexOf(a.month);
         });
 
-        // ✅ Pagination
+        //  Pagination
         const totalCount = history.length;
         const totalPages = Math.ceil(totalCount / limit);
         const startIndex = (page - 1) * limit;
@@ -319,12 +320,13 @@ async function run() {
       res.send(result);
     });
 
-    // ✅ Mount user routes
+    //  Mount user routes
     app.use("/vfusers", usersRoutes(db));
-    // ✅ Use payroll routes
+    //  Use payroll routes
     app.use("/payroll", payrollRoutes(db));
-    // ✅ Payroll routes
+    //  Payroll routes
     app.use("/makepayment", makePayments);
+    //  Content routes
 
 
     // Send a ping to confirm a successful connection
