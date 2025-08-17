@@ -34,26 +34,28 @@ function contentRoutes(db) {
   });
 
   //  Update content (replace whole document or specific section)
-  router.patch("/:id", verifyFirebaseToken, async (req, res) => {
-    try {
-      const id = req.params.id;
-      const updates = req.body;
+  router.patch("/:item", verifyFirebaseToken, async (req, res) => {
+  try {
+    const item = req.params.item; // e.g. "inviteSection", "logos"
+    const updates = req.body;
 
-      if (!ObjectId.isValid(id)) {
-        return res.status(400).json({ message: "Invalid ID" });
-      }
-
-      const result = await contentCollection.updateOne(
-        { _id: new ObjectId(id) },
-        { $set: updates }
-      );
-
-      res.json(result);
-    } catch (error) {
-      console.error("Error updating content:", error);
-      res.status(500).json({ message: "Server error" });
+    if (!updates || Object.keys(updates).length === 0) {
+      return res.status(400).json({ message: "No update data provided" });
     }
-  });
+
+    // Update the field dynamically
+    const result = await contentCollection.updateOne(
+      {}, // Assuming you have only one homepage content doc
+      { $set: { [item]: updates } }
+    );
+
+    res.json(result);
+  } catch (error) {
+    console.error("Error updating content:", error);
+    res.status(500).json({ message: "Server error" });
+  }
+});
+
 
   return router;
 }
