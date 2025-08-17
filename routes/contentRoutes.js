@@ -38,7 +38,8 @@ function contentRoutes(db) {
     try {
       const item = req.params.item; 
       const updates = req.body;
-
+      const key = Object.keys(updates)[0];
+      const value = updates[key];
       if (!updates || Object.keys(updates).length === 0) {
         return res.status(400).json({ message: "No update data provided" });
       }
@@ -46,7 +47,7 @@ function contentRoutes(db) {
       // Update the field dynamically
       const result = await contentCollection.updateOne(
         {}, 
-        { $set: { [item]: updates. } }
+        { $set: { [key]: value } }
       );
 
       res.json(result);
