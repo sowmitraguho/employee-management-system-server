@@ -8,7 +8,7 @@ const router = express.Router();
 function usersRoutes(db) {
   const usersCollection = db.collection("users");
 
-  // ✅ GET /users/verified → only verified & not fired
+  //  GET /users/verified → only verified & not fired
   router.get("/verified", verifyFirebaseToken, async (req, res) => {
     try {
       const verifiedUsers = await usersCollection
@@ -21,14 +21,14 @@ function usersRoutes(db) {
     }
   });
 
-  // ✅ PATCH /users/:id/fire → mark user as fired
+  //  PATCH /users/:id/fire → mark user as fired
 router.patch("/:id/fire", verifyFirebaseToken, async (req, res) => {
   const userId = req.params.id;
 
   try {
     let result;
 
-    // ✅ Try ObjectId first if it's a valid format
+    //  Try ObjectId first if it's a valid format
     const isValidObjectId = ObjectId.isValid(userId);
     if (isValidObjectId) {
       result = await usersCollection.updateOne(
@@ -37,7 +37,7 @@ router.patch("/:id/fire", verifyFirebaseToken, async (req, res) => {
       );
     }
 
-    // ✅ If no match, try plain string ID
+    //  If no match, try plain string ID
     if (!result || result.matchedCount === 0) {
       result = await usersCollection.updateOne(
         { _id: String(userId) },
@@ -45,17 +45,17 @@ router.patch("/:id/fire", verifyFirebaseToken, async (req, res) => {
       );
     }
 
-    // ✅ Still no user found
+    //  Still no user found
     if (result.matchedCount === 0) {
       return res.status(404).json({ message: "User not found" });
     }
 
-    // ✅ User exists but status is already "fired"
+    //  User exists but status is already "fired"
     if (result.modifiedCount === 0) {
       return res.status(200).json({ message: "User is already fired" });
     }
 
-    // ✅ Successfully updated
+    //  Successfully updated
     return res.json({ message: "User fired successfully" });
 
   } catch (err) {
@@ -65,7 +65,7 @@ router.patch("/:id/fire", verifyFirebaseToken, async (req, res) => {
 });
 
 
-  // ✅ PATCH /users/:id/makeHR → update role to HR
+  //  PATCH /users/:id/makeHR → update role to HR
 
 
   router.patch("/:id/makeHR", verifyFirebaseToken, async (req, res) => {
@@ -74,7 +74,7 @@ router.patch("/:id/fire", verifyFirebaseToken, async (req, res) => {
     try {
       let result;
 
-      // ✅ First try ObjectId if valid
+      //  First try ObjectId if valid
       const isValidObjectId = ObjectId.isValid(userId);
       if (isValidObjectId) {
         result = await usersCollection.updateOne(
@@ -83,7 +83,7 @@ router.patch("/:id/fire", verifyFirebaseToken, async (req, res) => {
         );
       }
 
-      // ✅ If no match with ObjectId, try as plain string ID
+      //  If no match with ObjectId, try as plain string ID
       if (!result || result.matchedCount === 0) {
         result = await usersCollection.updateOne(
           { _id: String(userId) },
@@ -91,17 +91,17 @@ router.patch("/:id/fire", verifyFirebaseToken, async (req, res) => {
         );
       }
 
-      // ✅ Still no match? User not found
+      //  Still no match? User not found
       if (result.matchedCount === 0) {
         return res.status(404).json({ message: "User not found" });
       }
 
-      // ✅ User exists but role was already HR
+      //  User exists but role was already HR
       if (result.modifiedCount === 0) {
         return res.status(200).json({ message: "User is already HR" });
       }
 
-      // ✅ Success
+      //  Success
       return res.json({ message: "User promoted to HR" });
 
     } catch (err) {
@@ -111,7 +111,7 @@ router.patch("/:id/fire", verifyFirebaseToken, async (req, res) => {
   });
 
 
-  // ✅ PATCH /users/:id/salary → update salary okokdffdsa
+  //  PATCH /users/:id/salary → update salary okokdffdsa
   router.patch("/:id/salary", verifyFirebaseToken, async (req, res) => {
     const userId = req.params.id;
     const { Salary } = req.body;
@@ -159,6 +159,54 @@ router.patch("/:id/fire", verifyFirebaseToken, async (req, res) => {
       return res.status(500).json({ message: "Failed to update salary" });
     }
   });
+
+  // PATCH /users/:id → update user info
+router.patch("/:id", verifyFirebaseToken, async (req, res) => {
+  const userId = req.params.id;
+  const updates = req.body; // Expect JSON with fields to update
+
+  if (!updates || Object.keys(updates).length === 0) {
+    return res.status(400).json({ message: "No update data provided" });
+  }
+
+  try {
+    let result;
+    const isValidObjectId = ObjectId.isValid(userId);
+
+    // First try ObjectId
+    if (isValidObjectId) {
+      result = await usersCollection.updateOne(
+        { _id: new ObjectId(userId) },
+        { $set: updates }
+      );
+    }
+
+    // If result didn't update anything, try string ID
+    if (!result || result.matchedCount === 0) {
+      result = await usersCollection.updateOne(
+        { _id: String(userId) },
+        { $set: updates }
+      );
+    }
+
+    if (result.matchedCount === 0) {
+      return res.status(404).json({ message: "User not found" });
+    }
+
+    if (result.modifiedCount === 0) {
+      return res.status(200).json({
+        message: "No changes were made (data may be the same).",
+      });
+    }
+
+    return res.json({ message: "User updated successfully" });
+
+  } catch (err) {
+    console.error("Error updating user:", err);
+    return res.status(500).json({ message: "Failed to update user" });
+  }
+});
+
 
 
   return router;
