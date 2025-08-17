@@ -78,7 +78,7 @@ async function run() {
     const worksCollection = db.collection("works");
     const usersCollection = db.collection("users");
     const paymentsCollection = db.collection("paymenthistory");
-    const heroSectionDataCollection = db.collection("homepageData");
+    //const heroSectionDataCollection = db.collection("homepageData");
 
 
 

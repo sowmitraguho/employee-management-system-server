@@ -5,7 +5,7 @@ const verifyFirebaseToken = require("../middlewires/firebaseAuth");
 const router = express.Router();
 
 function contentRoutes(db) {
-  const contentCollection = db.collection("content");
+  const contentCollection = db.collection("homepageData");
 
   //  Get all content (whyChooseUs, logos, services, projects, etc.)
   router.get("/", async (req, res) => {
