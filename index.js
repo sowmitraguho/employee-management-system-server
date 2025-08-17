@@ -7,6 +7,7 @@ require("dotenv").config();
 //  Import your user routes
 //import usersRoutes from "./routes/users.js";
 const usersRoutes = require("./routes/users");
+const contentRoutes = require("./routes/contentRoutes");
 //  Import payroll routes
 const payrollRoutes = require("./routes/payrollRoutes");
 const makePayments = require("./routes/makePayments");
