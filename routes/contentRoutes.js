@@ -10,7 +10,7 @@ function contentRoutes(db) {
   //  Get all content (whyChooseUs, logos, services, projects, etc.)
   router.get("/", async (req, res) => {
     try {
-      const content = await contentCollection.findOne({});
+      const content = await contentCollection.findOne();
       if (!content) {
         return res.status(404).json({ message: "No content found" });
       }

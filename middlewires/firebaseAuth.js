@@ -1,6 +1,6 @@
 const admin = require("firebase-admin");
 
-// ✅ Middleware to verify Firebase Token
+//  Middleware to verify Firebase Token
 const verifyFirebaseToken = async (req, res, next) => {
     const authHeader = req.headers.authorization;
 
