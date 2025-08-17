@@ -163,9 +163,9 @@ router.patch("/:id/fire", verifyFirebaseToken, async (req, res) => {
   // PATCH /users/:id → update user info
 router.patch("/:id", verifyFirebaseToken, async (req, res) => {
   const userId = req.params.id;
-  const updates = req.body; // Expect JSON with fields to update
+  const updatedUser = req.body; // Expect JSON with fields to update
 
-  if (!updates || Object.keys(updates).length === 0) {
+  if (!updatedUser || Object.keys(updatedUser).length === 0) {
     return res.status(400).json({ message: "No update data provided" });
   }
 
