@@ -78,7 +78,7 @@ async function run() {
     const worksCollection = db.collection("works");
     const usersCollection = db.collection("users");
     const paymentsCollection = db.collection("paymenthistory");
-    const heroSectionDataCollection = db.collection("heroSectionData");
+    const heroSectionDataCollection = db.collection("homepageData");
 
 
 
@@ -327,7 +327,7 @@ async function run() {
     //  Payroll routes
     app.use("/makepayment", makePayments);
     //  Content routes
-
+    app.use("/content", contentRoutes(db));
 
     // Send a ping to confirm a successful connection
     // await client.db("admin").command({ ping: 1 });
