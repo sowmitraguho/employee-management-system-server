@@ -46,7 +46,7 @@ function contentRoutes(db) {
       // Update the field dynamically
       const result = await contentCollection.updateOne(
         {}, 
-        { $set: { item: updates } }
+        { $set: { [item]: updates. } }
       );
 
       res.json(result);
