@@ -22,47 +22,47 @@ function usersRoutes(db) {
   });
 
   //  PATCH /users/:id/fire → mark user as fired
-router.patch("/:id/fire", verifyFirebaseToken, async (req, res) => {
-  const userId = req.params.id;
+  router.patch("/:id/fire", verifyFirebaseToken, async (req, res) => {
+    const userId = req.params.id;
 
-  try {
-    let result;
+    try {
+      let result;
 
-    //  Try ObjectId first if it's a valid format
-    const isValidObjectId = ObjectId.isValid(userId);
-    if (isValidObjectId) {
-      result = await usersCollection.updateOne(
-        { _id: new ObjectId(userId) },
-        { $set: { status: "fired" } }
-      );
+      //  Try ObjectId first if it's a valid format
+      const isValidObjectId = ObjectId.isValid(userId);
+      if (isValidObjectId) {
+        result = await usersCollection.updateOne(
+          { _id: new ObjectId(userId) },
+          { $set: { status: "fired" } }
+        );
+      }
+
+      //  If no match, try plain string ID
+      if (!result || result.matchedCount === 0) {
+        result = await usersCollection.updateOne(
+          { _id: String(userId) },
+          { $set: { status: "fired" } }
+        );
+      }
+
+      //  Still no user found
+      if (result.matchedCount === 0) {
+        return res.status(404).json({ message: "User not found" });
+      }
+
+      //  User exists but status is already "fired"
+      if (result.modifiedCount === 0) {
+        return res.status(200).json({ message: "User is already fired" });
+      }
+
+      //  Successfully updated
+      return res.json({ message: "User fired successfully" });
+
+    } catch (err) {
+      console.error("Error firing user:", err);
+      return res.status(500).json({ message: "Failed to fire user" });
     }
-
-    //  If no match, try plain string ID
-    if (!result || result.matchedCount === 0) {
-      result = await usersCollection.updateOne(
-        { _id: String(userId) },
-        { $set: { status: "fired" } }
-      );
-    }
-
-    //  Still no user found
-    if (result.matchedCount === 0) {
-      return res.status(404).json({ message: "User not found" });
-    }
-
-    //  User exists but status is already "fired"
-    if (result.modifiedCount === 0) {
-      return res.status(200).json({ message: "User is already fired" });
-    }
-
-    //  Successfully updated
-    return res.json({ message: "User fired successfully" });
-
-  } catch (err) {
-    console.error("Error firing user:", err);
-    return res.status(500).json({ message: "Failed to fire user" });
-  }
-});
+  });
 
 
   //  PATCH /users/:id/makeHR → update role to HR
@@ -161,51 +161,51 @@ router.patch("/:id/fire", verifyFirebaseToken, async (req, res) => {
   });
 
   // PATCH /users/:id → update user info
-router.patch("/:id", verifyFirebaseToken, async (req, res) => {
-  const userId = req.params.id;
-  const updatedUser = req.body; // Expect JSON with fields to update
+  router.patch("/:id", verifyFirebaseToken, async (req, res) => {
+    const userId = req.params.id;
+    const updatedUser = req.body;
 
-  if (!updatedUser || Object.keys(updatedUser).length === 0) {
-    return res.status(400).json({ message: "No update data provided" });
-  }
-
-  try {
-    let result;
-    const isValidObjectId = ObjectId.isValid(userId);
-
-    // First try ObjectId
-    if (isValidObjectId) {
-      result = await usersCollection.updateOne(
-        { _id: new ObjectId(userId) },
-        { $set: updates }
-      );
+    if (!updatedUser || Object.keys(updatedUser).length === 0) {
+      return res.status(400).json({ message: "No update data provided" });
     }
 
-    // If result didn't update anything, try string ID
-    if (!result || result.matchedCount === 0) {
-      result = await usersCollection.updateOne(
-        { _id: String(userId) },
-        { $set: updates }
-      );
+    try {
+      let result;
+      const isValidObjectId = ObjectId.isValid(userId);
+
+      // First try ObjectId
+      if (isValidObjectId) {
+        result = await usersCollection.updateOne(
+          { _id: new ObjectId(userId) },
+          { $set: updatedUser }
+        );
+      }
+
+      // If result didn't update anything, try string ID
+      if (!result || result.matchedCount === 0) {
+        result = await usersCollection.updateOne(
+          { _id: String(userId) },
+          { $set: updatedUser }
+        );
+      }
+
+      if (result.matchedCount === 0) {
+        return res.status(404).json({ message: "User not found" });
+      }
+
+      if (result.modifiedCount === 0) {
+        return res.status(200).json({
+          message: "No changes were made (data may be the same).",
+        });
+      }
+
+      return res.json({ message: "User updated successfully" });
+
+    } catch (err) {
+      console.error("Error updating user:", err);
+      return res.status(500).json({ message: "Failed to update user" });
     }
-
-    if (result.matchedCount === 0) {
-      return res.status(404).json({ message: "User not found" });
-    }
-
-    if (result.modifiedCount === 0) {
-      return res.status(200).json({
-        message: "No changes were made (data may be the same).",
-      });
-    }
-
-    return res.json({ message: "User updated successfully" });
-
-  } catch (err) {
-    console.error("Error updating user:", err);
-    return res.status(500).json({ message: "Failed to update user" });
-  }
-});
+  });
 
 
 
